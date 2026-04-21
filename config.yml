@@ -1,0 +1,62 @@
+# config.yml – generic CI/CD example
+
+stages:
+  - build
+  - test
+  - deploy
+
+# Optional: common setup for all jobs
+variables:
+  IMAGE_NAME: "myapp"
+  TAG: "latest"
+
+# Optional: use a Docker image if your runner supports it
+image: alpine:latest
+
+# Build stage
+build:
+  stage: build
+  script:
+    - echo "=== Building your application ==="
+    - echo "Add your build commands here, e.g.:"
+    - echo "# docker build -t $IMAGE_NAME:$TAG ."
+    - echo "# npm run build   (for Node.js)"
+    - echo "# python setup.py sdist bdist_wheel   (for Python)"
+  tags:
+    - docker      # or your runner tag
+  only:
+    - main
+
+# Test stage
+test:
+  stage: test
+  script:
+    - echo "=== Running tests ==="
+    - echo "Add your test commands here, e.g.:"
+    - echo "# python -m pytest"
+    - echo "# npm test"
+    - echo "# make test"
+  artifacts:
+    paths:
+      - coverage/          # optional: coverage reports
+      - test-reports/      # optional: XML/JUnit reports
+  tags:
+    - docker
+
+# Deploy stage (manual or automatic)
+deploy:
+  stage: deploy
+  script:
+    - echo "=== Deploying to staging/production ==="
+    - echo "Add your deploy commands here, e.g.:"
+    - echo "# docker push $IMAGE_NAME:$TAG"
+    - echo "# kubectl apply -f k8s/"
+    - echo "# pcft push"
+  environment:
+    name: production
+    url: https://your-app.example.com
+  when: manual          # remove this line if you want auto-deploy
+  only:
+    - main
+  tags:
+    - prod-runner
